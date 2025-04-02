@@ -15,7 +15,7 @@ const initialState = {
   loading: false,
   credentials: {},
   likes: [],
-  notifications: []
+  notifications: [],
 };
 
 export default function(state = initialState, action) {

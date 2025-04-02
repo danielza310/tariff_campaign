@@ -32,7 +32,7 @@ const SignIn = (props) => {
   }
 
   return (<>
-    <div className='sign_div'>
+    <div className='max-w-md w-full bg-white shadow-md rounded-lg px-6 py-8 mx-auto mt-[205px]'>
      <div className='flex flex-row mb-5'>
         <div className='basis-64 pt-1 text-left'>Email</div>
         <div className='basis-192'>
@@ -57,7 +57,9 @@ const SignIn = (props) => {
         <div className='basis-64'></div>
      </div>
      </div>
-    </>)
+    </>
+    
+)
 }
 
 const mapStateToProps = (state) => ({
