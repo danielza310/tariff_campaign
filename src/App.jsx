@@ -1,4 +1,3 @@
-// import { useState } from 'react'
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import './App.css'
@@ -10,17 +9,13 @@ import Posts from './pages/post'
 import SignIn from './pages/sign/signin'
 import SignUp from './pages/sign/signUp'
 import CreatePost from './pages/post/create'
+import Chat from './pages/chat'
 import NavBar from './components/layout/navbar'
 import Authenticatie from './utils/authenticate'
 
-function App() {
-  // navigator.serviceWorker
-  // .register('/firebase-messaging-sw.js')
-  // .then((registration) => {
-  //   console.log('Service Worker registered:', registration);
-  // });
 
-return (<>
+function App() {
+  return (<>
     <Provider store={store}>
         <BrowserRouter>
           <Authenticatie>
@@ -29,6 +24,7 @@ return (<>
               <Route path="/" element={<Posts />} />
               <Route path="/signin" element={<SignIn/>} />
               <Route path="/signup" element={<SignUp/>} />
+              <Route path="/chat" element={<Chat/>} />
               <Route path="/post/create" element={<CreatePost/>} />
             </Routes>
           </Authenticatie>

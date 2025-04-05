@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app"
-import { getMessaging } from "firebase/messaging";
+import { getMessaging , isSupported } from "firebase/messaging";
 import { getAuth } from "firebase/auth"
 import { getFirestore } from "firebase/firestore";
 
@@ -24,8 +24,8 @@ const firebaseApp = initializeApp({
 
 
 });
+
 export const app = firebaseApp;
-// export const messaging = getMessaging(app);
 export const db = getFirestore();
 export const auth = getAuth(app)
 
