@@ -2,6 +2,7 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import {thunk} from 'redux-thunk';
 
 import userReducer from './reducers/userReducer';
+import postReducer from './reducers/postReducer';
 
 const initialState = {};
 
@@ -9,6 +10,7 @@ const middleware = [thunk];
 
 const reducers = combineReducers({
   user: userReducer,
+  post: postReducer,
 });
 
 const composeEnhancers =
