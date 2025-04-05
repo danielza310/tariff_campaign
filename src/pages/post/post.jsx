@@ -12,7 +12,7 @@ const Post = (props) => {
   return (<>
     <div className='w-full px-10 py-3'>
         <div>{props.title}</div>
-        <div>{props.content}</div>
+        <div><pre>{props.content}</pre></div>
      </div>
     </>)
 }
