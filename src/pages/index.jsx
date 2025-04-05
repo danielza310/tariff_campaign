@@ -1,16 +1,15 @@
 import { connect } from 'react-redux';
 
 
-const Home = () => {
+const Home = (props) => {
   return (<>
-     <h1 class="text-3xl font-bold underline">
+     <h1 className="text-3xl font-bold underline">
         Hello world!
     </h1>
     </>)
 }
-
 const mapStateToProps = (state) => ({
-    data: state.data
+  user: state.user
   });
   
 export default connect(
