@@ -14,6 +14,11 @@ import NavBar from './components/layout/navbar'
 import Authenticatie from './utils/authenticate'
 
 function App() {
+  // navigator.serviceWorker
+  // .register('/firebase-messaging-sw.js')
+  // .then((registration) => {
+  //   console.log('Service Worker registered:', registration);
+  // });
 
 return (<>
     <Provider store={store}>
