@@ -6,8 +6,6 @@ import { FaUser } from "react-icons/fa";
 import {signOut } from "../../store/actions/userActions"
 import { auth } from "../../firebase"
 const Navbar = (props) => {
-    console.log(props.user);
-    
   return (<>
      <nav className="fixed top-0 left-0 w-full bg-sky-500/100 h-[50px] flex">
         <ul className='flex flex-row w-fit m-auto'>

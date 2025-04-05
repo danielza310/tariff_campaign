@@ -7,8 +7,10 @@ import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages'
 import SignIn from './pages/sign/signin'
+import SignUp from './pages/sign/signUp';
 import NavBar from './components/layout/navbar'
 import Authenticatie from './utils/authenticate'
+
 
 let c=0;
 function App() {
@@ -24,6 +26,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/signin" element={<SignIn/>} />
+              <Route path="/signup" element={<SignUp/>} />
             </Routes>
           </Authenticatie>
           </BrowserRouter>
