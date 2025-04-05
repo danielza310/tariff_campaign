@@ -6,6 +6,8 @@ import {collection, doc ,getDoc} from "firebase/firestore";
 import {signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import {setUserData} from '../../store/actions/userActions';
+import { Link } from 'react-router-dom';
+
 const SignIn = (props) => {
   const [email, setEmail] = useState("danielza310@gmail.com");
   const [password, setPassword] = useState("111111");
@@ -25,6 +27,10 @@ const SignIn = (props) => {
         alert(error)
     })
   }
+  const signup = () => {
+    navigate("/singup")
+  }
+
   return (<>
     <div className='sign_div'>
      <div className='flex flex-row mb-5'>
@@ -46,7 +52,7 @@ const SignIn = (props) => {
             <button type='button' className='border-solid border !border-red-500 px-4 py-2' onClick={signin}>SignIn</button>
         </div>
         <div className='basis-64'>
-            <button type='button' className='border-solid border !border-sky-500 px-4 py-2'>SignUp</button>
+            <Link to="/signup"><button type='button' className='border-solid border !border-sky-500 px-4 py-2'>SignUp</button></Link>
         </div>
         <div className='basis-64'></div>
      </div>

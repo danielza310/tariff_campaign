@@ -14,6 +14,7 @@ export const setUserData = (userData) => (dispatch) => {
   dispatch({ type: SET_USER, payload:userData });
 };
 
+
 export const signOut = () => (dispatch) => {
   dispatch({ type: SET_UNAUTHENTICATED });
 };

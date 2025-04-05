@@ -8,9 +8,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 // import Home from './pages'
 import Posts from './pages/post'
 import SignIn from './pages/sign/signin'
-import CreatePost from './pages/post/create'
+import SignUp from './pages/sign/signUp';
+import CreatePost from './pages/post/create
 import NavBar from './components/layout/navbar'
 import Authenticatie from './utils/authenticate'
+
 
 let c=0;
 function App() {
@@ -26,10 +28,11 @@ function App() {
             <Routes>
               <Route path="/" element={<Posts />} />
               <Route path="/signin" element={<SignIn/>} />
+              <Route path="/signup" element={<SignUp/>} />
               <Route path="/post/create" element={<CreatePost/>} />
             </Routes>
           </Authenticatie>
-          </BrowserRouter>
+        </BrowserRouter>
     </Provider>    
     </>)
 }
