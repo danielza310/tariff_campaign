@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { connect } from 'react-redux';
 import "./post.css"
 import { auth, db } from "../../firebase"
-import { collection ,addDoc,serverTimestamp } from "firebase/firestore";
+import { collection ,addDoc, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 import {setUserData} from '../../store/actions/userActions';
 const CreatePost = (props) => {

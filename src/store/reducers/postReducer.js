@@ -5,6 +5,7 @@ import {
 const initialState = {
   posts: [],
   keyword:'',
+  serverTime: ""
 };
 
 export default function(state = initialState, action) {

@@ -2,14 +2,45 @@ import { useState, useEffect } from 'react'
 import { connect } from 'react-redux';
 import "./post.css"
 import { auth, db } from "../../firebase"
-import { collection , where, query, getDocs, startAfter , limit ,orderBy } from "firebase/firestore";
+import { doc, setDoc, getDoc, collection , where, query, getDocs, startAfter , limit ,orderBy, serverTimestamp } from "firebase/firestore";
 import { useLocation } from 'react-router-dom';
 import {setUserData} from '../../store/actions/userActions';
+import {updatePost } from "../../store/actions/postActions"
+import { format } from 'date-fns';
 import Post from './post';
+
+
 let lastVisible = null;
 const Posts = (props) => {
+
   let location=useLocation();
   const [posts, setPosts] = useState([]);
+
+  // const getServerTime = async () => {
+  //   const tempRef = doc(db, 'utils', 'server-time');
+  
+  //   // Write server timestamp
+  //   await setDoc(tempRef, { time: serverTimestamp() });
+  
+  //   // Read back to get resolved timestamp
+  //   const snapshot = await getDoc(tempRef);
+  //   const serverTime = snapshot.data().time.toDate(); // Convert Firestore Timestamp to JS Date
+  
+  //   return serverTime;
+  // }
+
+
+  // useEffect(() => {
+  //   const fetchServerTime = async () => {
+  //     const serverTime = await getServerTime();
+  //     props.updatePost({serverTime: "khkj"})
+  //   };
+
+  //   fetchServerTime();
+
+  // }, [])
+
+
   useEffect(()=>{
     search();
   },[location.pathname,props.keyword])
@@ -44,7 +75,7 @@ const Posts = (props) => {
     const q = lastVisible==null?query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(10)):query(collection(db, "posts"), orderBy("createdAt", "desc"), startAfter(null), limit(10));
     const snap = await getDocs(q);
     let _posts=[]
-    snap.forEach(doc=>_posts.push(doc.data()))
+    snap.forEach(doc=>_posts.push({id:doc.id,...doc.data()}))
     setPosts(_posts)
   }
   return (<>
@@ -59,7 +90,7 @@ const Posts = (props) => {
       <div className="w-3/4 mx-auto py-8 px-4">
         <div className="space-y-6">
           {posts.map((article, index) => (
-            <Post key={index} {...article} />
+            <Post key={index} {...article } />
           ))}
         </div>
       </div>
