@@ -1,4 +1,0 @@
-@tailwind utilities;
-.chat-user {
-  @apply flex flex-row cursor-pointer focus:bg-sky-400 h-[40px] p-2 text-lg hover:bg-sky-400;
-}
