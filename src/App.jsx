@@ -8,19 +8,19 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 // import Home from './pages'
 import Posts from './pages/post'
 import SignIn from './pages/sign/signin'
-import SignUp from './pages/sign/signUp';
+import SignUp from './pages/sign/signUp'
 import CreatePost from './pages/post/create'
 import NavBar from './components/layout/navbar'
 import Authenticatie from './utils/authenticate'
 
-
-let c=0;
 function App() {
+  // navigator.serviceWorker
+  // .register('/firebase-messaging-sw.js')
+  // .then((registration) => {
+  //   console.log('Service Worker registered:', registration);
+  // });
 
-  // c++;
-  // console.log("start app"+c);
-  
-  return (<>
+return (<>
     <Provider store={store}>
         <BrowserRouter>
           <Authenticatie>
