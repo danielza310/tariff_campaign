@@ -2,10 +2,11 @@
 @import "tailwindcss";
 
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
+  margin: 0px;
   padding: 2rem;
+  padding-top: 50px;
   text-align: center;
+  width: 100%;
 }
 
 .logo {
