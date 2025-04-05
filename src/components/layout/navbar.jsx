@@ -2,7 +2,9 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FaHome, FaSearch  } from "react-icons/fa";
 import { HiOutlineLogin, HiOutlineLogout  } from "react-icons/hi";
+import { BsBellFill } from "react-icons/bs";
 import { FaUser } from "react-icons/fa";
+import { IoChatbox } from "react-icons/io5";
 import {signOut } from "../../store/actions/userActions"
 import {updatePost } from "../../store/actions/postActions"
 import { auth } from "../../firebase"
@@ -25,17 +27,25 @@ const Navbar = (props) => {
             <li>
                 <Link to="/"><FaHome className='text-[40px] pt-2 text-white mr-3' /></Link>
             </li>
+            <li>
+                <Link to="/chat"><IoChatbox className='text-[40px] pt-2 text-white mr-3' /></Link>
+            </li>
         </ul>
         {!props.user.authenticated?<>
             <ul className=' w-fit float-right'>
                 <li>
                     <Link to="/signin"><HiOutlineLogin className='text-[40px] pt-2 text-white mr-3' /></Link>
                 </li>
+                
             </ul>
         </>:<>
             <ul className='flex flex-row  w-fit float-right'>
                 <li className='flex flex-row'>
                     <Link className='!border-sky-1000 text-sky-900  h-[40px] mt-[5px] !py-[6px] px-5 rounded-lg  mr-10 bg-white' to="/post/create">Create Post</Link>
+                </li>
+                <li className='relative'>
+                    <BsBellFill className='text-[40px] pt-2 text-white' /> 
+                    <div className='text-xs absolute top-[3px] left-[22px] w-4 bg-red-900 text-white border rounded-full'>5</div>
                 </li>
                 <li className='flex flex-row'>
                     <FaUser className='text-[40px] pt-2 text-white' /> 
@@ -50,7 +60,7 @@ const Navbar = (props) => {
             </ul>
         </>}
      </nav>
-
+     
     </>)
 }
 
