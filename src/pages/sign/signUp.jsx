@@ -34,7 +34,7 @@ const SignUp = (props) => {
           createdAt: new Date(),
         });    
         await sendEmailVerification(user);
-        history.push('/');
+        navigate('/');
       } catch (error) {
         if (error.code === 'auth/email-already-in-use') {
             toast.error('Email is already in use. Please use a different one or sign in.');

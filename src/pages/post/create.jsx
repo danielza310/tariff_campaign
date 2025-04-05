@@ -22,7 +22,7 @@ const CreatePost = (props) => {
         }
     try {
         const docRef = await addDoc(collection(db, "posts"), {
-            title, content , useremail:props.user.email,username:props.user.username, likes:[], comments:[],
+            title, content , useremail:props.user.email,username:props.user.username, likes:[], loves:[], laughs:[], comments:[],
             createdAt: serverTimestamp(), // 👈 sets to current server time
         });
         navigate('/');
