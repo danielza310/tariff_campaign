@@ -48,9 +48,21 @@ const Posts = (props) => {
     setPosts(_posts)
   }
   return (<>
-    <div className='w-full'>
-        {posts.map((p)=><Post {...p}/>)}
-     </div>
+    {/* <div className="max-w-2xl mx-auto py-8 px-4">
+        <div className="space-y-10">
+          {posts.map((article, index) => (
+            <Post key={index} {...article} />
+          ))}
+        </div>
+      </div> */}
+
+      <div className="w-3/4 mx-auto py-8 px-4">
+        <div className="space-y-6">
+          {posts.map((article, index) => (
+            <Post key={index} {...article} />
+          ))}
+        </div>
+      </div>
     </>)
 }
 

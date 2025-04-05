@@ -9,7 +9,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Posts from './pages/post'
 import SignIn from './pages/sign/signin'
 import SignUp from './pages/sign/signUp';
-import CreatePost from './pages/post/create
+import CreatePost from './pages/post/create'
 import NavBar from './components/layout/navbar'
 import Authenticatie from './utils/authenticate'
 
