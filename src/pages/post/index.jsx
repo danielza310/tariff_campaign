@@ -87,7 +87,7 @@ const Posts = (props) => {
         </div>
       </div> */}
 
-      <div className="w-3/4 mx-auto py-8 px-4">
+      <div className="w-2/3 mx-auto py-8 px-4">
         <div className="space-y-6">
           {posts.map((article, index) => (
             <Post key={index} {...article } />

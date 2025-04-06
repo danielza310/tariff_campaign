@@ -11,23 +11,17 @@ export const updatePost = (data) => (dispatch) => {
     UPDATE_POST_STORE, payload:data });
 };
 
-
 export const updateRecommendation = (data) => (dispatch) => {
   try {
     const post = doc(db, "posts", data.id);
-    console.log('post', post)
 
     updateDoc(post, { ...data, updatedAt: new Date() 
     }).then((res) => {
-      console.log('res', res)
       dispatch({ type: UPDATE_POST_STORE, payload: postRef });
     })
-
-    
 
     console.log("Post updated successfully!");
   } catch (error) {
     console.error("Error updating post:", error.message);
   }
-  
 };
