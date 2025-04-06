@@ -12,14 +12,21 @@ export const updatePost = (data) => (dispatch) => {
 };
 
 export const updateRecommendation = (data) => (dispatch) => {
-  try {
-    const post = doc(db, "posts", data.id);
-    updateDoc(post, { ...data, updatedAt: new Date() 
-    }).then((res) => {
-      dispatch({ type: UPDATE_POST_STORE, payload: data });
-    })
-    console.log("Post updated successfully!");
-  } catch (error) {
-    console.error("Error updating post:", error.message);
-  }
+  return new Promise((res, rej) => {
+    if(data.id==undefined){
+      rej();
+      return
+    } 
+    try {
+      const post = doc(db, "posts", data.id);
+      updateDoc(post, { ...data, updatedAt: new Date() 
+      }).then((res1) => {
+        dispatch({ type: UPDATE_POST_STORE, payload: data });
+        res();
+      })
+    } catch (error) {
+      console.error("Error updating post:", error.message);
+      rej();
+    }
+  });
 };

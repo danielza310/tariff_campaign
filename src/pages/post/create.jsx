@@ -39,8 +39,7 @@ const CreatePost = (props) => {
             const imageRef = storageRef(storage, `products/${docRef.id}`);
             await uploadBytes(imageRef, image)
         }
-        
-        // navigate('/');
+        navigate('/');
     } catch (error) {
         console.log(error)
     }
