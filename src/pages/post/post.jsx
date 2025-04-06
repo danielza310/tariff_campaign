@@ -8,6 +8,7 @@ import {setUserData} from '../../store/actions/userActions';
 import { updatePost, updateRecommendation } from "../../store/actions/postActions"
 import { format  } from 'date-fns';
 import "./post.css"
+import { LuUserRound } from "react-icons/lu";
 
 const Post = (props) => {
   const [defaultTime, setDefaultTime] = useState(new Date())
@@ -163,12 +164,13 @@ const Post = (props) => {
   <article className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200 w-full">
     {/* Avatar and Username */}
     <div className="flex items-center gap-3 mb-4">
-      <img
+      {/* <img
         // src={author.avatar}
         // alt={username}
         src="avatar/images.jfif"
         className="w-10 h-10 rounded-full object-cover"
-      />
+      /> */}
+      <LuUserRound className='text-4xl text-gray-700' /> 
       <div>
         <h3 className="font-medium text-gray-900">{username}</h3>
         <p className="text-sm text-gray-500">{format(createdAt.toDate(), 'MMM d')}</p>
@@ -231,7 +233,7 @@ const Post = (props) => {
                   e.preventDefault();
                   setIsExpanded(true);
                 }}
-                className="text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors"
+                className="text-gray-600! hover:text-gray-700! flex items-center gap-1 transition-colors"
               >
                 Show More
                 <ChevronDown className="w-4 h-4" />
@@ -247,7 +249,7 @@ const Post = (props) => {
                   e.preventDefault();
                   setIsExpanded(false);
                 }}
-                className="text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors"
+                className="text-gray-600! hover:text-gray-700! flex items-center gap-1 transition-colors"
               >
                 Show Less
                 <ChevronUp className="w-4 h-4" />
