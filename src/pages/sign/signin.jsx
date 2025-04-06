@@ -28,7 +28,7 @@ const SignIn = (props) => {
     })
   }
   const signup = () => {
-    navigate("/singup")
+    navigate("/signup")
   }
 
   return (<>

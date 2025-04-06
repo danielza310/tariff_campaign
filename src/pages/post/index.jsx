@@ -3,11 +3,12 @@ import { connect } from 'react-redux';
 import "./post.css"
 import { auth, db } from "../../firebase"
 import { doc, setDoc, getDoc, collection , where, query, getDocs, startAfter , limit ,orderBy, serverTimestamp } from "firebase/firestore";
-import { useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import {setUserData} from '../../store/actions/userActions';
 import {updatePost } from "../../store/actions/postActions"
 import { format } from 'date-fns';
 import Post from './post';
+import SocialPostCard from './postcard';
 
 
 let lastVisible = null;
@@ -15,6 +16,7 @@ const Posts = (props) => {
 
   let location=useLocation();
   const [posts, setPosts] = useState([]);
+  const navigate = useNavigate(); 
 
   // const getServerTime = async () => {
   //   const tempRef = doc(db, 'utils', 'server-time');
@@ -79,21 +81,92 @@ const Posts = (props) => {
     setPosts(_posts)
   }
   return (<>
-    {/* <div className="max-w-2xl mx-auto py-8 px-4">
-        <div className="space-y-10">
-          {posts.map((article, index) => (
-            <Post key={index} {...article} />
-          ))}
-        </div>
-      </div> */}
+        {/* <div>
+          <div className="w-1/2 mx-auto py-8 px-4">
+            <div className="space-y-6">
+              {posts.map((article, index) => (
+                <Post key={index} {...article } />
+              ))}
+            </div>
+          </div>
+        </div> */}
 
-      <div className="w-2/3 mx-auto py-8 px-4">
-        <div className="space-y-6">
+
+      <div className="flex flex-col md:flex-row w-full px-4 py-8 gap-6">
+        {/* Left Sidebar */}
+        <aside className="hidden md:flex flex-col items-start w-full md:w-[16%] md:ml-4 bg-white rounded-lg p-4 shadow-sm">
+          {/* Button section */}
+          <div className="mt-12 w-full flex flex-col items-center gap-2">
+            <button className="w-full text-blue-600 border border-blue-600 rounded px-4 py-2 text-sm hover:bg-blue-50" onClick={() => navigate("/signup")}>
+              Sign Up
+            </button>
+            <button className="w-full text-blue-700 bg-blue-50 rounded px-4 py-2 text-sm hover:bg-blue-100" onClick={() => navigate("/signin")}>
+              Sign in
+            </button>
+          </div>
+
+          <ul className="w-full space-y-2 text-sm text-gray-700 mt-5">
+            {[
+              { label: "Home", icon: "🏠" },
+              { label: "About", icon: "ℹ️" },
+              { label: "DMs", icon: "💬" },
+              { label: "T & C", icon: "📃" },
+              { label: "Privacy", icon: "🔒" },
+            ].map((item) => (
+              <li
+                key={item.label}
+                className="flex items-center gap-2 w-full px-4 py-2 rounded text-sm cursor-pointer hover:bg-gray-100"
+              >
+                <span className='ml-5'>{item.icon}</span>
+                <span>{item.label}</span>
+              </li>
+            ))}
+          </ul>
+        </aside>
+
+
+        {/* Main Post Content */}
+        <main className="w-full md:w-3/5">
+          <div className="space-y-6">
+            {posts.map((article, index) => (
+              <Post key={index} {...article} />
+            ))}
+          </div>
+        </main>
+
+        {/* Right Sidebar */}
+        <aside className="hidden md:block w-full md:w-1/5 bg-white rounded-lg p-4 shadow-sm">
+            {/* <div className="flex flex-col gap-2">
+                <input
+                type="text"
+                placeholder="Post something..."
+                className="border rounded px-3 py-2 w-full focus:outline-none focus:ring focus:border-blue-300"
+                />
+                <div className="flex justify-end items-center gap-2">
+                <button className="border rounded px-2 py-1 text-sm">+</button>
+                <button className="bg-blue-600 text-white px-4 py-1 rounded text-sm hover:bg-blue-700">
+                    Post
+                </button>
+                </div>
+            </div> */}
+
+            {/* Trending Section */}
+            <div>
+              <p className="text-gray-600 mb-1 flex items-center gap-1">
+                🔥 <span>Trending Today:</span>
+                </p>
+                {/* <div className="flex gap-3 text-blue-600 font-medium">
+                <a href="#" className="hover:underline">#BrexitDrama</a>
+                <a href="#" className="hover:underline">#KoalaTok</a>
+                </div> */}
+            </div>
+             
           {posts.map((article, index) => (
-            <Post key={index} {...article } />
+            <SocialPostCard key={index} {...article} />
           ))}
-        </div>
+        </aside>
       </div>
+
     </>)
 }
 

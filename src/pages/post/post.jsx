@@ -16,8 +16,6 @@ let lastVisible = null;
 const Post = (props) => {
   const [defaultTime, setDefaultTime] = useState(new Date())
 
- 
-
   // useEffect(() => {
   //   if (showEvaluation) {
   //     fetchEvaluations();
@@ -44,9 +42,7 @@ const Post = (props) => {
   }, [])
 
   const loginUser = props.user.email
-  console.log('props.user', props.user)
   const { title, content, username, useremail, createdAt, likes, loves, laughs, id, comments } = props
-  console.log('props', props)
 
   const [recommendations, setRecommendations] = useState({likes, loves, laughs, userEmail: ""});
   const [showEvaluation, setShowEvaluation] = useState(false);
@@ -75,7 +71,7 @@ const Post = (props) => {
   let location=useLocation();
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const previewLength = 350;
+  const previewLength = 310;
   const shouldShowMore = content.length > previewLength;
   const displayContent = isExpanded ? content : content.slice(0, previewLength) + '...';
 
@@ -158,7 +154,8 @@ const Post = (props) => {
     <div className="flex items-center gap-3 mb-4">
       <img
         // src={author.avatar}
-        // alt={author.name}
+        // alt={username}
+        src="avatar/images.jfif"
         className="w-10 h-10 rounded-full object-cover"
       />
       <div>
@@ -222,6 +219,7 @@ const Post = (props) => {
             </span>
           </div> */}
 
+        {/* likes */}
           <div
             className={`flex items-center gap-1 cursor-pointer transition-colors ${
               useremail == loginUser ? 'pointer-events-none opacity-50' : 'hover:text-blue-500'
@@ -232,7 +230,8 @@ const Post = (props) => {
               }
             }}
           >
-            <ThumbsUp  size={24} />
+            <span role="img" aria-label="thumbs up" style={{ fontSize: '20px' }}>👍</span>
+            {/* <ThumbsUp  size={24} /> */}
             <span className="w-6 h-6 flex items-center justify-center text-sm text-blue-600 bg-white rounded-full">
               {recommendations.likes.length > 0 && (
                 <span className="text-sm">{recommendations.likes.length}</span>
@@ -240,6 +239,7 @@ const Post = (props) => {
             </span>
           </div>
 
+        {/* loves */}
           <div
             className={`flex items-center gap-1 cursor-pointer transition-colors ${
               useremail == loginUser ? 'pointer-events-none opacity-50' : 'hover:text-red-500'
@@ -250,7 +250,8 @@ const Post = (props) => {
               }
             }}
           >
-            <Heart className="text-red-500 fill-red-500" size={24}  />
+            <span role="img" aria-label="heart" style={{ fontSize: '20px' }}>❤️</span>
+            {/* <Heart className="text-red-500 fill-red-500" size={24}  /> */}
             <span className="w-6 h-6 flex items-center justif-ycenter text-sm text-red-600 bg-white rounded-full">
               {recommendations.loves.length > 0 && (
                 <span className="text-sm">{recommendations.loves.length}</span>
@@ -258,6 +259,7 @@ const Post = (props) => {
             </span>
           </div>
 
+        {/* laugh */}
           <div
             className={`flex items-center gap-1 cursor-pointer transition-colors ${
               useremail == loginUser ? 'pointer-events-none opacity-50' : 'hover:text-rose-500'
@@ -268,21 +270,17 @@ const Post = (props) => {
               }
             }}
           >
-            <Laugh size={24} />
+             <span role="img" aria-label="smile" style={{ fontSize: '20px' }}>😃</span>
+            {/* <Laugh size={24} /> */}
             <span className="w-6 h-6 flex items-center justif-ycenter text-sm text-rose-600 bg-white rounded-full">
               {recommendations.laughs.length > 0 && (
                 <span className="text-sm">{recommendations.laughs.length}</span>
               )}
             </span>
           </div>
-
         </div>
 
-        {/* <div className="flex items-center hover:text-gray-700" id="second">
-          <MessageCircle size={24} />
-          comments
-        </div> */}
-
+        {/* comment */}
         <div className="flex items-center hover:text-gray-700 cursor-pointer" onClick={() => setShowEvaluation((prev) => !prev)}>
             <MessageCircle size={24} />
             <span className="w-6 h-6 flex items-center justify-center text-sm text-red-600 bg-white rounded-full">
@@ -296,7 +294,7 @@ const Post = (props) => {
 
       {/* Third aligned far right with spacing */}
       <div className="flex items-center gap-4 md:ml-auto md:mr-[50px]" id="third">
-        <span>{readTime(createdAt)} read</span>
+        <span>{readTime(createdAt)} ago</span>
         <span className="hover:text-gray-700">
           <Bookmark size={18} />
         </span>
@@ -318,6 +316,7 @@ const Post = (props) => {
               <img
                 // src={author.avatar}
                 // alt={author.name}
+                src="avatar/images.jfif"
                 className="w-8 h-8 rounded-full  md:ml-13 object-cover"
               />
               <div>
