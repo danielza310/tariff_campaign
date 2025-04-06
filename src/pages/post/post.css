@@ -2,3 +2,18 @@
 {
     @apply w-[500px] m-auto
 }
+
+.signup {
+    background-color: white !important;
+    border-color: blue !important;
+}
+
+.signup:hover {
+    background-color: #3B4DFF !important;
+    color: white !important;
+}
+
+.signin:hover {
+    background-color: #f5f5f5 !important;
+    border-color: #f5f5f5 !important;
+}

@@ -15,7 +15,6 @@ import { format, differenceInMinutes, parse  } from 'date-fns';
 let lastVisible = null;
 const Post = (props) => {
   const [defaultTime, setDefaultTime] = useState(new Date())
-
   // useEffect(() => {
   //   if (showEvaluation) {
   //     fetchEvaluations();
@@ -71,9 +70,13 @@ const Post = (props) => {
   let location=useLocation();
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const previewLength = 310;
+  const previewLength = 400;
   const shouldShowMore = content.length > previewLength;
   const displayContent = isExpanded ? content : content.slice(0, previewLength) + '...';
+
+  const formattedContent = displayContent
+  .replace(/\. /g, '.\n')
+  .replace(/: /g, ':\n');
 
 
   const getTimeDifferenceString = (dateStr1, dateStr2) => {
@@ -171,7 +174,7 @@ const Post = (props) => {
 
     {/* Content Preview */}
     <div className="prose prose-sm max-w-none mb-4 md:ml-10">
-      <p className="text-gray-600 leading-relaxed text-left relative">
+      {/* <p className="text-gray-600 leading-relaxed text-left relative">
         {displayContent}
         {!isExpanded && shouldShowMore && (
           <span className="inline-flex items-center absolute right-5">
@@ -201,7 +204,49 @@ const Post = (props) => {
             <ChevronUp size={16} />
           </a>
         )}
-      </p>
+      </p> */}
+
+      <div className="relative">
+          <div 
+            className={`text-gray-700 leading-relaxed ${
+              !isExpanded ? 'line-clamp-3 pr-32' : ''
+            }`}
+          >
+            <p className="whitespace-pre-line text-left">{formattedContent}</p>
+          </div>
+          
+          {!isExpanded && (
+            <div className="absolute bottom-0 right-0 inline-flex items-center bg-gradient-to-l from-white via-white to-transparent pl-12">
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsExpanded(true);
+                }}
+                className="text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors"
+              >
+                Show More
+                <ChevronDown className="w-4 h-4" />
+              </a>
+            </div>
+          )}
+          
+          {isExpanded && (
+            <div className="flex justify-end mt-2">
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsExpanded(false);
+                }}
+                className="text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors"
+              >
+                Show Less
+                <ChevronUp className="w-4 h-4" />
+              </a>
+            </div>
+          )}
+        </div>
     </div>
 
     {/* Reactions, Comments, Read Time */}
