@@ -16,7 +16,6 @@ export const updateRecommendation = (data) => (dispatch) => {
     const post = doc(db, "posts", data.id);
     updateDoc(post, { ...data, updatedAt: new Date() 
     }).then((res) => {
-      console.log('res', res)
       dispatch({ type: UPDATE_POST_STORE, payload: data });
     })
     console.log("Post updated successfully!");

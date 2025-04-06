@@ -15,6 +15,14 @@ import { format, differenceInMinutes, parse  } from 'date-fns';
 let lastVisible = null;
 const Post = (props) => {
   const [defaultTime, setDefaultTime] = useState(new Date())
+
+ 
+
+  // useEffect(() => {
+  //   if (showEvaluation) {
+  //     fetchEvaluations();
+  //   }
+  // }, [showEvaluation]);
   
   const getServerTime = async () => {
     const tempRef = doc(db, 'utils', 'server-time');
@@ -36,16 +44,41 @@ const Post = (props) => {
   }, [])
 
   const loginUser = props.user.email
-  const { title, content, username, useremail, createdAt, likes, loves, laughs, id } = props
+  console.log('props.user', props.user)
+  const { title, content, username, useremail, createdAt, likes, loves, laughs, id, comments } = props
+  console.log('props', props)
+
   const [recommendations, setRecommendations] = useState({likes, loves, laughs, userEmail: ""});
+  const [showEvaluation, setShowEvaluation] = useState(false);
+  const [evaluationText, setEvaluationText] = useState('');
+  const [evaluations, setEvaluations] = useState([]);
+  const [expandedEvaluations, setExpandedEvaluations] = useState({});
+
+  const toggleEvaluationExpand = (name) => {
+    setExpandedEvaluations((prev) => ({
+      ...prev,
+      [name]: !prev[name],
+    }));
+  };
+
+  const submitEvaluation = (id) => {
+    if (evaluationText.trim() === '') return;
+    const { username } = props.user
+    const newComment = { name: username, content: evaluationText }
+    let updateComment = comments
+    updateComment.push(newComment)
+    setRecommendations({...recommendations, comments: updateComment, id })
+    setEvaluationText("")
+  };
   // const [isRecommended, setIsRecommended] = useState(false);
 
   let location=useLocation();
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const previewLength = 500;
+  const previewLength = 350;
   const shouldShowMore = content.length > previewLength;
   const displayContent = isExpanded ? content : content.slice(0, previewLength) + '...';
+
 
   const getTimeDifferenceString = (dateStr1, dateStr2) => {
     const date1 = new Date(dateStr1.replace(' ', 'T'));
@@ -199,8 +232,8 @@ const Post = (props) => {
               }
             }}
           >
-            <ThumbsUp size={24} />
-            <span className="w-6 h-6 flex items-center justify-center text-sm text-red-600 bg-white rounded-full">
+            <ThumbsUp  size={24} />
+            <span className="w-6 h-6 flex items-center justify-center text-sm text-blue-600 bg-white rounded-full">
               {recommendations.likes.length > 0 && (
                 <span className="text-sm">{recommendations.likes.length}</span>
               )}
@@ -217,7 +250,7 @@ const Post = (props) => {
               }
             }}
           >
-            <Heart size={24} />
+            <Heart className="text-red-500 fill-red-500" size={24}  />
             <span className="w-6 h-6 flex items-center justif-ycenter text-sm text-red-600 bg-white rounded-full">
               {recommendations.loves.length > 0 && (
                 <span className="text-sm">{recommendations.loves.length}</span>
@@ -227,7 +260,7 @@ const Post = (props) => {
 
           <div
             className={`flex items-center gap-1 cursor-pointer transition-colors ${
-              useremail == loginUser ? 'pointer-events-none opacity-50' : 'hover:text-red-500'
+              useremail == loginUser ? 'pointer-events-none opacity-50' : 'hover:text-rose-500'
             }`}
             onClick={() => {
               if (useremail != loginUser) {
@@ -236,7 +269,7 @@ const Post = (props) => {
             }}
           >
             <Laugh size={24} />
-            <span className="w-6 h-6 flex items-center justif-ycenter text-sm text-red-600 bg-white rounded-full">
+            <span className="w-6 h-6 flex items-center justif-ycenter text-sm text-rose-600 bg-white rounded-full">
               {recommendations.laughs.length > 0 && (
                 <span className="text-sm">{recommendations.laughs.length}</span>
               )}
@@ -245,10 +278,20 @@ const Post = (props) => {
 
         </div>
 
-        <div className="flex items-center hover:text-gray-700" id="second">
-          <MessageCircle size={18} />
+        {/* <div className="flex items-center hover:text-gray-700" id="second">
+          <MessageCircle size={24} />
           comments
-        </div>
+        </div> */}
+
+        <div className="flex items-center hover:text-gray-700 cursor-pointer" onClick={() => setShowEvaluation((prev) => !prev)}>
+            <MessageCircle size={24} />
+            <span className="w-6 h-6 flex items-center justify-center text-sm text-red-600 bg-white rounded-full">
+              {comments.length > 0 && (
+                <span className="text-sm">{comments.length}</span>
+              )}
+            </span>
+            <span className="ml-1">comments</span>
+          </div>
       </div>
 
       {/* Third aligned far right with spacing */}
@@ -259,6 +302,92 @@ const Post = (props) => {
         </span>
       </div>
     </div>
+
+
+
+    {showEvaluation && (
+
+    <div className="bg-gray-50 rounded-md border-none p-4 mt-4 md:ml-10 md:mr-[50px]">
+      {/* Evaluation List */}
+      {comments.length > 0 ? (
+      <ul className="mb-4 space-y-2">
+        {comments.map((item, index) => (
+          <li key={index} className="border-none p-2 rounded text-sm bg-white">
+            {/* Avatar and Username */}
+            <div className="flex items-center gap-3 mb-3">
+              <img
+                // src={author.avatar}
+                // alt={author.name}
+                className="w-8 h-8 rounded-full  md:ml-13 object-cover"
+              />
+              <div>
+                <h3 className="font-medium text-gray-900">{item.name}</h3>
+                {/* <p className="text-sm text-gray-500">{format(createdAt.toDate(), 'MMM d')}</p> */}
+              </div>
+            </div>
+            <div className="text-gray-700 whitespace-pre-line md:ml-30 w-3/4 text-left">{item.content}</div>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="text-gray-500 mb-4">No feedback yet. Be the first to comment!</p>
+    )}
+
+      {/* {comments.length > 0 ? (
+        <ul className="mb-4 space-y-2">
+          {comments.map((item, index) => {
+          const isExpanded = expandedEvaluations[item.name];
+          const content = item.content;
+          const preview = content.slice(0, 350);
+          const shouldShowMore = content.length > 350;
+
+          return (
+            <li key={index} className="border p-3 rounded text-sm bg-white">
+              <div className="font-medium text-gray-800 mb-1">{item.name}</div>
+              <div className="text-gray-700 whitespace-pre-line">
+                {isExpanded || !shouldShowMore ? content : preview + '...'}
+              </div>
+              {shouldShowMore && (
+                <button
+                  onClick={() => toggleEvaluationExpand(item.name)}
+                  className="mt-1 text-blue-600 hover:text-blue-800 text-xs font-medium"
+                >
+                  {isExpanded ? 'Show Less ▲' : 'Show More ▼'}
+                </button>
+              )}
+            </li>
+          );
+        })}
+        </ul>
+      ) : (
+        <p className="text-gray-500 mb-4">No feedback yet. Be the first to comment!</p>
+      )} */}
+
+      
+
+      {/* Evaluation Input */}
+      <textarea
+        className="w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+        rows={3}
+        placeholder="Write your evaluation..."
+        value={evaluationText}
+        onChange={(e) => setEvaluationText(e.target.value)}
+      />
+      <button disabled={useremail == loginUser && true}
+        onClick={() => {
+          if (useremail != loginUser) {
+            submitEvaluation(id);
+          }
+        }}
+        className="mt-2 px-4 py-2 bg-blue-600 text-black rounded-md hover:bg-blue-700 text-sm"
+      >
+        Submit
+      </button>
+    </div>
+
+)}
+
+
 </article>
 
 
@@ -279,5 +408,6 @@ export default connect(
     mapStateToProps,
     { setUserData, updatePost, updateRecommendation }
 )(Post);
+
   
 
