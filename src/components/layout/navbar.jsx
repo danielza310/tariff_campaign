@@ -23,8 +23,9 @@ const Navbar = (props) => {
             );
             const unsubscribe = onSnapshot(q, (snapshot) => {
                 const data = snapshot.docs.map((doc) =>{
-                    return doc.data()
-                } );
+                    return {id:doc.id,...doc.data()}
+                });
+                // console.log(data);                
                 props.updateBase({unreadmessages:data})
             });
             return () => {
@@ -32,9 +33,9 @@ const Navbar = (props) => {
             }
         }
     }, [props.user.authenticated]);  
-    console.log("unreadmessages",props.unreadmessages)
+    
   return (<>
-     <nav className="fixed top-0 left-0 w-full bg-sky-500/100 h-[50px] flex">
+     <nav className="fixed top-0 left-0 w-full bg-sky-500/100 h-[50px] flex z-50">
         <ul className=' w-fit float-left'>
                 <li>
                     <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-indigo-400 my-2 mx-2">
@@ -74,7 +75,7 @@ const Navbar = (props) => {
                 <li>
                     <Link className='relative' to="/notification">
                     <BsBellFill className='text-[40px] pt-2 text-white' /> 
-                    {props.unreadmessages.filter(m=>m.from=='site').length!=0 && <div className='text-xs absolute top-[3px] left-[22px] w-4 bg-red-900 text-white border rounded-full'>
+                    {props.unreadmessages.filter(m=>m.from=='site').length!=0 && <div className='text-xs absolute top-[3px] left-[0px] w-4 bg-red-900 text-white border rounded-full'>
                         {props.unreadmessages.filter(m=>m.from=='site').length}</div>}
                     </Link>
                 </li>

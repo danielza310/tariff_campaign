@@ -1,29 +1,17 @@
 import { useState, useEffect } from 'react'
 import { connect } from 'react-redux';
 import { MessageCircle, Bookmark, ChevronDown, ChevronUp, ThumbsUp, Heart,Laugh } from 'lucide-react';
-import { auth, db } from "../../firebase"
-import { doc, setDoc, getDoc, collection , where, query, getDocs, startAfter , limit ,orderBy, serverTimestamp } from "firebase/firestore";
+import { db } from "../../firebase"
+import { doc, setDoc, getDoc, collection , addDoc, serverTimestamp } from "firebase/firestore";
 import { useLocation } from 'react-router-dom';
 import {setUserData} from '../../store/actions/userActions';
 import { updatePost, updateRecommendation } from "../../store/actions/postActions"
+import { format  } from 'date-fns';
+import "./post.css"
 
-import { format, differenceInMinutes, parse  } from 'date-fns';
-
-
-// import "./post.css"
-
-let lastVisible = null;
 const Post = (props) => {
   const [defaultTime, setDefaultTime] = useState(new Date())
-
  
-
-  // useEffect(() => {
-  //   if (showEvaluation) {
-  //     fetchEvaluations();
-  //   }
-  // }, [showEvaluation]);
-  
   const getServerTime = async () => {
     const tempRef = doc(db, 'utils', 'server-time');
   
@@ -43,12 +31,9 @@ const Post = (props) => {
     })
   }, [])
 
-  const loginUser = props.user.email
-  console.log('props.user', props.user)
+  const signin_email = props.user.email
   const { title, content, username, useremail, createdAt, likes, loves, laughs, id, comments } = props
-  console.log('props', props)
-
-  const [recommendations, setRecommendations] = useState({likes, loves, laughs, userEmail: ""});
+  const [recommendations, setRecommendations] = useState({likes, loves, laughs, userEmail: "",notice:""});
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [evaluationText, setEvaluationText] = useState('');
   const [evaluations, setEvaluations] = useState([]);
@@ -104,51 +89,70 @@ const Post = (props) => {
     return getTimeDifferenceString(formatCTime, formatDTime)
   }
 
-  const handleRecommend = (type, id) => {
+  const handleRecommend = (type) => {
+    /*
+    I reacted to the post with a love reaction.
+    I removed the love reaction from the post.
+    */
     setRecommendations({ ...recommendations, id })
+    let notice="";
     if (type == 0) {
-      if (!recommendations.likes.includes(loginUser)) {
+      if (!recommendations.likes.includes(signin_email)) {
+        notice=`${props.user.username} reacted to the post ${title} with a like reaction.`;
         setRecommendations(prev => ({
-          // count: prev.count + 1,
-          ...prev,
-          likes: [...prev.likes, loginUser]
+          ...prev,notice,
+          likes: [...prev.likes, signin_email]
         }));
       } else {
+        notice=`${props.user.username} removed the like reaction from the post ${title}`;
         setRecommendations(prev => ({
-          // count: prev.count - 1,
-          ...prev,
-          likes: prev.likes.filter(person => person !== loginUser)
+          ...prev,notice,
+          likes: prev.likes.filter(person => person !== signin_email)
         }));
       }
     } else if (type == 1) {
-      if (!recommendations.loves.includes(loginUser)) {
+      if (!recommendations.loves.includes(signin_email)) {
+        notice=`${props.user.username} reacted to the post ${title} with a love reaction.`;
         setRecommendations(prev => ({
-          ...prev,
-          loves: [...prev.loves, loginUser]
+          ...prev,notice,
+          loves: [...prev.loves, signin_email]
         }));
       } else {
+        notice=`${props.user.username} removed the love reaction from the post ${title}`;
         setRecommendations(prev => ({
-          ...prev,
-          loves: prev.loves.filter(person => person !== loginUser)
+          ...prev,notice,
+          loves: prev.loves.filter(person => person !== signin_email)
         }));
       }
     } else {
-      if (!recommendations.laughs.includes(loginUser)) {
+      if (!recommendations.laughs.includes(signin_email)) {
+        notice=`${props.user.username} reacted to the post ${title} with a laugh reaction.`;
         setRecommendations(prev => ({
-          ...prev,
-          laughs: [...prev.laughs, loginUser]
+          ...prev,notice,
+          laughs: [...prev.laughs, signin_email]
         }));
       } else {
+        notice=`${props.user.username} removed the laugh reaction from the post ${title}`;
         setRecommendations(prev => ({
-          ...prev,
-          laughs: prev.laughs.filter(person => person !== loginUser)
+          ...prev,notice,
+          laughs: prev.laughs.filter(person => person !== signin_email)
         }));
       }
     }
   };
 
   useEffect(() => {
-    props.updateRecommendation(recommendations)
+    props.updateRecommendation(recommendations).then(()=>{
+       addDoc(collection(db, 'messages'), {
+          from: "site" ,
+          to: props.useremail,
+          message:recommendations.notice,
+          read:0,
+          timestamp: serverTimestamp(),
+        });
+    }).catch(()=>{
+      
+    })
   }, [recommendations])
 
 
@@ -209,7 +213,6 @@ const Post = (props) => {
 
     {/* Reactions, Comments, Read Time */}
     <div className="flex flex-col md:flex-row md:items-center justify-between text-gray-500 text-sm gap-4 md:gap-0 w-full">
-      
       {/* First + Second with spacing */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:gap-[50px] gap-2 md:ml-10">
         <div className="flex gap-6" id="first">
@@ -221,14 +224,13 @@ const Post = (props) => {
               )}
             </span>
           </div> */}
-
           <div
             className={`flex items-center gap-1 cursor-pointer transition-colors ${
-              useremail == loginUser ? 'pointer-events-none opacity-50' : 'hover:text-blue-500'
+              useremail == signin_email ? 'pointer-events-none opacity-50' : 'hover:text-blue-500'
             }`}
             onClick={() => {
-              if (useremail != loginUser) {
-                handleRecommend(0, id);
+              if (useremail != signin_email) {
+                handleRecommend(0);
               }
             }}
           >
@@ -242,11 +244,11 @@ const Post = (props) => {
 
           <div
             className={`flex items-center gap-1 cursor-pointer transition-colors ${
-              useremail == loginUser ? 'pointer-events-none opacity-50' : 'hover:text-red-500'
+              useremail == signin_email ? 'pointer-events-none opacity-50' : 'hover:text-red-500'
             }`}
             onClick={() => {
-              if (useremail != loginUser) {
-                handleRecommend(1, id);
+              if (useremail != signin_email) {
+                handleRecommend(1);
               }
             }}
           >
@@ -260,11 +262,11 @@ const Post = (props) => {
 
           <div
             className={`flex items-center gap-1 cursor-pointer transition-colors ${
-              useremail == loginUser ? 'pointer-events-none opacity-50' : 'hover:text-rose-500'
+              useremail == signin_email ? 'pointer-events-none opacity-50' : 'hover:text-rose-500'
             }`}
             onClick={() => {
-              if (useremail != loginUser) {
-                handleRecommend(2, id);
+              if (useremail != signin_email) {
+                handleRecommend(2);
               }
             }}
           >
@@ -373,9 +375,9 @@ const Post = (props) => {
         value={evaluationText}
         onChange={(e) => setEvaluationText(e.target.value)}
       />
-      <button disabled={useremail == loginUser && true}
+      <button disabled={useremail == signin_email && true}
         onClick={() => {
-          if (useremail != loginUser) {
+          if (useremail != signin_email) {
             submitEvaluation(id);
           }
         }}
