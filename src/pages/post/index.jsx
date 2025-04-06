@@ -16,36 +16,13 @@ const Posts = (props) => {
 
   let location=useLocation();
   const [posts, setPosts] = useState([]);
+  const [trendPosts, setTrendPosts] = useState([])
   const navigate = useNavigate(); 
-
-  // const getServerTime = async () => {
-  //   const tempRef = doc(db, 'utils', 'server-time');
-  
-  //   // Write server timestamp
-  //   await setDoc(tempRef, { time: serverTimestamp() });
-  
-  //   // Read back to get resolved timestamp
-  //   const snapshot = await getDoc(tempRef);
-  //   const serverTime = snapshot.data().time.toDate(); // Convert Firestore Timestamp to JS Date
-  
-  //   return serverTime;
-  // }
-
-
-  // useEffect(() => {
-  //   const fetchServerTime = async () => {
-  //     const serverTime = await getServerTime();
-  //     props.updatePost({serverTime: "khkj"})
-  //   };
-
-  //   fetchServerTime();
-
-  // }, [])
-
 
   useEffect(()=>{
     search();
   },[location.pathname,props.keyword])
+
   const search=async ()=>{
     /*
     🔧 Supported comparison operators:
@@ -77,9 +54,24 @@ const Posts = (props) => {
     const q = lastVisible==null?query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(10)):query(collection(db, "posts"), orderBy("createdAt", "desc"), startAfter(null), limit(10));
     const snap = await getDocs(q);
     let _posts=[]
-    snap.forEach(doc=>_posts.push({id:doc.id,...doc.data()}))
+    let trendingPosts = []
+    snap.forEach(doc=>{
+      _posts.push({id:doc.id,...doc.data()})
+      trendingPosts.push({id:doc.id,...doc.data()})
+
+    })
     setPosts(_posts)
+
+    trendingPosts.sort((a, b) => {
+      let recommendA = Number(a.likes.length + a.loves.length + a.laughs.length)
+      let recommendB= Number(b.likes.length + b.loves.length + b.laughs.length)
+      return recommendB - recommendA
+    })
+    setTrendPosts(trendingPosts)
   }
+
+
+
   return (<>
         {/* <div>
           <div className="w-1/2 mx-auto py-8 px-4">
@@ -94,13 +86,15 @@ const Posts = (props) => {
 
       <div className="flex flex-col md:flex-row w-full px-4 py-8 gap-6">
         {/* Left Sidebar */}
-        <aside className="hidden md:flex flex-col items-start w-full md:w-[16%] md:ml-4 bg-white rounded-lg p-4 shadow-sm">
+        <aside className="hidden md:flex flex-col items-start w-full md:w-[16%] md:ml-4 rounded-lg p-4 shadow-sm">
           {/* Button section */}
-          <div className="mt-12 w-full flex flex-col items-center gap-2">
-            <button className="w-full text-blue-600 border border-blue-600 rounded px-4 py-2 text-sm hover:bg-blue-50" onClick={() => navigate("/signup")}>
+          <div className="mt-12 w-full flex flex-col items-center gap-2 space-y-2">
+            <button className="w-full  md:w-3/4 text-blue-700 bg-blue-600 hover:bg-blue-700 font-semibold rounded px-4 py-2 signup"
+              onClick={() => navigate("/signup")}>
               Sign Up
             </button>
-            <button className="w-full text-blue-700 bg-blue-50 rounded px-4 py-2 text-sm hover:bg-blue-100" onClick={() => navigate("/signin")}>
+            <button className="w-full md:w-3/4 border-none text-gray-700 rounded px-4 py-2 text-sm hover:bg-gray-500 signin" style={{backgroundColor: 'white'}}
+             onClick={() => navigate("/signin")}>
               Sign in
             </button>
           </div>
@@ -109,13 +103,14 @@ const Posts = (props) => {
             {[
               { label: "Home", icon: "🏠" },
               { label: "About", icon: "ℹ️" },
-              { label: "DMs", icon: "💬" },
+              { label: "DMs", icon: "💬", url: "/chat" },
               { label: "T & C", icon: "📃" },
               { label: "Privacy", icon: "🔒" },
             ].map((item) => (
               <li
                 key={item.label}
                 className="flex items-center gap-2 w-full px-4 py-2 rounded text-sm cursor-pointer hover:bg-gray-100"
+                onClick={() => navigate(item.url)}
               >
                 <span className='ml-5'>{item.icon}</span>
                 <span>{item.label}</span>
@@ -161,7 +156,7 @@ const Posts = (props) => {
                 </div> */}
             </div>
              
-          {posts.map((article, index) => (
+          {trendPosts.map((article, index) => (
             <SocialPostCard key={index} {...article} />
           ))}
         </aside>

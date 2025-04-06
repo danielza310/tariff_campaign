@@ -24,7 +24,6 @@ const SignIn = (props) => {
         } 
     }).catch ((error) => {
         console.log("error")
-        alert(error)
     })
   }
   const signup = () => {

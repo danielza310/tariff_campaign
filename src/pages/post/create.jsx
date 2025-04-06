@@ -42,7 +42,6 @@ const CreatePost = (props) => {
         navigate('/');
     } catch (error) {
         console.log(error)
-        alert(error.message)
     }
   }
   return (<>

@@ -18,7 +18,6 @@ const SocialPostCard = (props) => {
         return serverTime;
       }
     
-
     const getTimeDifferenceString = (dateStr1, dateStr2) => {
         const date1 = new Date(dateStr1.replace(' ', 'T'));
         const date2 = new Date(dateStr2.replace(' ', 'T'));
@@ -47,9 +46,8 @@ const SocialPostCard = (props) => {
 
   return (
     <>
-        <div className="max-w-md w-full bg-white border rounded-md shadow-sm p-4 space-y-4 text-sm">
+        <div className="max-w-md w-full bg-white border rounded-md shadow-sm p-4 space-y-4 text-sm mb-5">
             {/* Post Content */}
-           
             <div className="border-none space-y-2">
                 <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3 mb-1">
@@ -66,8 +64,7 @@ const SocialPostCard = (props) => {
                 </div>
                     <div className="text-gray-500 text-lg font-bold cursor-pointer">⋯</div>
                 </div>
-
-                <p className='text-left ml-5'>{title}</p>
+                <p className='text-[18px] font-bold text-gray-900 mb-3 leading-tight text-left ml-5'>{title}</p>
 
                 {/* <div className="w-full bg-gray-100 h-24 rounded flex items-center justify-center text-gray-400">
                 🫖
