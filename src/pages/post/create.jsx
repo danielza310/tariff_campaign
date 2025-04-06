@@ -1,15 +1,24 @@
 import { useState } from 'react'
 import { connect } from 'react-redux';
 import "./post.css"
-import { auth, db } from "../../firebase"
+import { storage, db } from "../../firebase"
 import { collection ,addDoc, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 import {setUserData} from '../../store/actions/userActions';
+import {getDownloadURL,ref as storageRef,uploadBytes} from "firebase/storage";
 const CreatePost = (props) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [image, setImage] = useState("");
   const navigate = useNavigate(); // for programmatic navigation
+  const handleChange = e => {
+    if (e.target.files[0]) {
+      const image = e.target.files[0];
+      setImage(image);
+    }
+  };
   const create=async ()=>{
+    console.log(image)
     if(title.trim()=="")
     {
         alert('Please input new post title.');
@@ -25,7 +34,13 @@ const CreatePost = (props) => {
             title, content , useremail:props.user.email,username:props.user.username, likes:[], loves:[], laughs:[], comments:[],
             createdAt: serverTimestamp(), // 👈 sets to current server time
         });
-        navigate('/');
+        if(image)
+        {
+            const imageRef = storageRef(storage, `products/${docRef.id}`);
+            await uploadBytes(imageRef, image)
+        }
+        
+        // navigate('/');
     } catch (error) {
         console.log(error)
         alert(error.message)
@@ -41,7 +56,9 @@ const CreatePost = (props) => {
         <textarea type="text" className='w-full border-solid border border-sky-500 border-black h-[60vh] py-3 px-6' value={content} placeholder='New post content here....'
                 onChange={(e)=>{setContent(e.target.value)}}/>
     </div>
-    
+    <div className="w-full text-left">
+        <input label="Image" placeholder="Choose image" accept="image/png,image/jpeg" type="file" onChange={handleChange}/>
+    </div>
      <div className='flex flex-row w-full mb-5'>
         <div className='basis-128'></div>
         <div className='basis-256'>

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FaHome, FaSearch  } from "react-icons/fa";
@@ -7,8 +8,31 @@ import { FaUser } from "react-icons/fa";
 import { IoChatbox } from "react-icons/io5";
 import {signOut } from "../../store/actions/userActions"
 import {updatePost } from "../../store/actions/postActions"
-import { auth } from "../../firebase"
+import {updateBase } from "../../store/actions/baseActions"
+import { auth, db } from "../../firebase"
+import {collection,addDoc,serverTimestamp,where,query,onSnapshot,orderBy} from "firebase/firestore";
 const Navbar = (props) => {
+    useEffect(() => {
+        if(props.user.authenticated)
+        {
+            const q = query(
+                collection(db, 'messages'),
+                where('to', '==', props.user.email),
+                where('read', '==', 0),
+                orderBy('timestamp')
+            );
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                const data = snapshot.docs.map((doc) =>{
+                    return doc.data()
+                } );
+                props.updateBase({unreadmessages:data})
+            });
+            return () => {
+                unsubscribe();
+            }
+        }
+    }, [props.user.authenticated]);  
+    console.log("unreadmessages",props.unreadmessages)
   return (<>
      <nav className="fixed top-0 left-0 w-full bg-sky-500/100 h-[50px] flex">
         <ul className=' w-fit float-left'>
@@ -28,7 +52,11 @@ const Navbar = (props) => {
                 <Link to="/"><FaHome className='text-[40px] pt-2 text-white mr-3' /></Link>
             </li>
             <li>
-                <Link to="/chat"><IoChatbox className='text-[40px] pt-2 text-white mr-3' /></Link>
+                <Link className='relative' to="/chat">
+                    <IoChatbox className='text-[40px] pt-2 text-white mr-3' />
+                    {props.unreadmessages.filter(m=>m.from!='site').length!=0 && <div className='text-xs absolute top-[3px] left-0 w-4 bg-red-900 text-white border rounded-full'>
+                        {props.unreadmessages.filter(m=>m.from!='site').length}</div>}
+                </Link>
             </li>
         </ul>
         {!props.user.authenticated?<>
@@ -43,9 +71,12 @@ const Navbar = (props) => {
                 <li className='flex flex-row'>
                     <Link className='!border-sky-1000 text-sky-900  h-[40px] mt-[5px] !py-[6px] px-5 rounded-lg  mr-10 bg-white' to="/post/create">Create Post</Link>
                 </li>
-                <li className='relative'>
+                <li>
+                    <Link className='relative' to="/notification">
                     <BsBellFill className='text-[40px] pt-2 text-white' /> 
-                    <div className='text-xs absolute top-[3px] left-[22px] w-4 bg-red-900 text-white border rounded-full'>5</div>
+                    {props.unreadmessages.filter(m=>m.from=='site').length!=0 && <div className='text-xs absolute top-[3px] left-[22px] w-4 bg-red-900 text-white border rounded-full'>
+                        {props.unreadmessages.filter(m=>m.from=='site').length}</div>}
+                    </Link>
                 </li>
                 <li className='flex flex-row'>
                     <FaUser className='text-[40px] pt-2 text-white' /> 
@@ -65,12 +96,13 @@ const Navbar = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-    user: state.user
+    user: state.user,
+    unreadmessages: state.base.unreadmessages
   });
   
 export default connect(
     mapStateToProps,
-    { signOut , updatePost }
+    { signOut , updatePost, updateBase  }
 )(Navbar);
   
 

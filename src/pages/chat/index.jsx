@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import "./chat.css";
 import { auth, db } from "../../firebase";
-import {collection,addDoc,serverTimestamp,where,query,onSnapshot,orderBy} from "firebase/firestore";
+import {collection,addDoc,serverTimestamp,where,query,onSnapshot,orderBy,updateDoc,doc} from "firebase/firestore";
 import { setUserData } from "../../store/actions/userActions";
 import { AiOutlineUser } from "react-icons/ai";
 const Chat = (props) => {
@@ -30,12 +30,20 @@ const Chat = (props) => {
       orderBy('timestamp')
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) =>{
-        return doc.data()
+      const data = snapshot.docs.map((document) =>{
+        let message=document.data()
+        if(message.to==props.user.email)
+        {
+          const post = doc(db, "messages", document.id);
+          updateDoc(post, { read:1}).then((res) => {
+            //unreadmessages
+            // console.log('res', res)
+            // dispatch({ type: UPDATE_POST_STORE, payload: data });
+          })
+        }
+        return message
       } );
       setMessages(data)
-      console.log(data);
-      
     });
     return () => {
       unsubscribe();
@@ -72,6 +80,7 @@ const Chat = (props) => {
 
 const mapStateToProps = (state) => ({
   users: state.base.users,
+  unreadmessages: state.base.unreadmessages,
   user: state.user,
 });
 
