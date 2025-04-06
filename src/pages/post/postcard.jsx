@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { format, differenceInMinutes, parse  } from 'date-fns';
+import { LuUserRound } from "react-icons/lu";
 
 const SocialPostCard = (props) => {
     const [defaultTime, setDefaultTime] = useState(new Date())
@@ -51,12 +52,13 @@ const SocialPostCard = (props) => {
             <div className="border-none space-y-2">
                 <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3 mb-1">
-                        <img
+                        {/* <img
                         // src={author.avatar}
                         // alt={username}
                         src="avatar/images.jfif"
                         className="w-7 h-7 rounded-full object-cover"
-                        />
+                        /> */}
+                        <LuUserRound className='text-4xl text-gray-700' /> 
                         <div>
                         <h3 className="font-medium text-gray-900">{username}</h3>
                         <p className="text-sm text-gray-500">{readTime(createdAt)}</p>

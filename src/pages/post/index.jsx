@@ -4,8 +4,8 @@ import "./post.css"
 import { auth, db } from "../../firebase"
 import { doc, setDoc, getDoc, collection , where, query, getDocs, startAfter , limit ,orderBy, serverTimestamp } from "firebase/firestore";
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import {setUserData} from '../../store/actions/userActions';
-import {updatePost } from "../../store/actions/postActions"
+import {setUserData , signOut} from '../../store/actions/userActions';
+import {updateBase } from "../../store/actions/baseActions"
 import { format } from 'date-fns';
 import Post from './post';
 import SocialPostCard from './postcard';
@@ -18,10 +18,35 @@ const Posts = (props) => {
   const [posts, setPosts] = useState([]);
   const [trendPosts, setTrendPosts] = useState([])
   const navigate = useNavigate(); 
+  const [isFetching, setIsFetching] = useState(false);
 
   useEffect(()=>{
+    setPosts([]);
+    lastVisible=null;
     search();
   },[location.pathname,props.keyword])
+
+  const handleScroll = () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop
+      >= document.documentElement.offsetHeight - 100
+      && !isFetching
+    ) {
+      setIsFetching(true);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isFetching]);
+
+  useEffect(() => {
+    if (isFetching) {
+      search();
+    }
+  }, [isFetching]);
+
 
   const search=async ()=>{
     /*
@@ -51,44 +76,53 @@ const Posts = (props) => {
 
 
     */
-    const q = lastVisible==null?query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(10)):query(collection(db, "posts"), orderBy("createdAt", "desc"), startAfter(null), limit(10));
-    const snap = await getDocs(q);
-    let _posts=[]
-    let trendingPosts = []
-    snap.forEach(doc=>{
-      _posts.push({id:doc.id,...doc.data()})
-      trendingPosts.push({id:doc.id,...doc.data()})
-
-    })
-    setPosts(_posts)
-
+    let _posts=[];
+    props.updateBase({loading:true})
+    while(_posts.length<4)
+    {
+      const q = lastVisible==null?query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(4)):query(collection(db, "posts"), orderBy("createdAt", "desc"), startAfter(lastVisible), limit(4));
+      const snap = await getDocs(q);
+      let c=0;
+      snap.forEach(doc=>{
+        let data=doc.data();
+        if(props.keyword!="" && data.title.indexOf(props.keyword)<0 && data.content.indexOf(props.keyword)<0) return
+        c++;
+        lastVisible=doc
+        _posts.push({id:doc.id,...data})
+      })
+      if(c==0) break;
+    }
+    let trendingPosts=[...posts,..._posts]
+    setPosts([...posts,..._posts])
     trendingPosts.sort((a, b) => {
       let recommendA = Number(a.likes.length + a.loves.length + a.laughs.length)
       let recommendB= Number(b.likes.length + b.loves.length + b.laughs.length)
       return recommendB - recommendA
     })
     setTrendPosts(trendingPosts)
+    props.updateBase({loading:false})
   }
 
-
-
   return (<>
-        {/* <div>
-          <div className="w-1/2 mx-auto py-8 px-4">
-            <div className="space-y-6">
-              {posts.map((article, index) => (
-                <Post key={index} {...article } />
-              ))}
-            </div>
-          </div>
-        </div> */}
-
-
+     
       <div className="flex flex-col md:flex-row w-full px-4 py-8 gap-6">
         {/* Left Sidebar */}
         <aside className="hidden md:flex flex-col items-start w-full md:w-[16%] md:ml-4 rounded-lg p-4 shadow-sm">
           {/* Button section */}
           <div className="mt-12 w-full flex flex-col items-center gap-2 space-y-2">
+          {props.user.authenticated?<>
+            <button className="w-full  md:w-3/4 text-blue-700 bg-blue-600 hover:bg-blue-700 font-semibold rounded px-4 py-2 signup"
+              onClick={() => navigate("/post/create")}>
+              Create Post
+            </button>
+            <button className="w-full md:w-3/4 border-none text-gray-700 rounded px-4 py-2 text-sm hover:bg-gray-500 signin" style={{backgroundColor: 'white'}}
+             onClick={() => {
+              auth.signOut();
+              props.signOut();
+             }}>
+              Sign Out
+            </button>
+          </>:<>
             <button className="w-full  md:w-3/4 text-blue-700 bg-blue-600 hover:bg-blue-700 font-semibold rounded px-4 py-2 signup"
               onClick={() => navigate("/signup")}>
               Sign Up
@@ -97,6 +131,8 @@ const Posts = (props) => {
              onClick={() => navigate("/signin")}>
               Sign in
             </button>
+          </>}
+            
           </div>
 
           <ul className="w-full space-y-2 text-sm text-gray-700 mt-5">
@@ -109,11 +145,13 @@ const Posts = (props) => {
             ].map((item) => (
               <li
                 key={item.label}
-                className="flex items-center gap-2 w-full px-4 py-2 rounded text-sm cursor-pointer hover:bg-gray-100"
+                className="flex items-center gap-2 w-full px-4 py-2 rounded text-sm cursor-pointer hover:bg-gray-100 relative"
                 onClick={() => navigate(item.url)}
               >
                 <span className='ml-5'>{item.icon}</span>
                 <span>{item.label}</span>
+                {item.label=="DMs" && props.unreadmessages.filter(m=>m.from!='site').length!=0 && <div className='text-xs absolute top-[8px] left-24 w-4 bg-red-900 text-white border rounded-full'>
+                  {props.unreadmessages.filter(m=>m.from!='site').length}</div>}
               </li>
             ))}
           </ul>
@@ -166,12 +204,14 @@ const Posts = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-    keyword: state.post.keyword
+    keyword: state.post.keyword,
+    unreadmessages: state.base.unreadmessages,
+    user: state.user
   });
   
 export default connect(
     mapStateToProps,
-    { setUserData }
+    { setUserData, signOut, updateBase }
 )(Posts);
   
 

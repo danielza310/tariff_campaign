@@ -62,7 +62,7 @@ const Chat = (props) => {
           ))}
         </div>
         <div className="basis-4/4 ">
-          <div className="w-96/100 rounded-md border-solid border border-sky-400 mt-3 mb-[10px]" style={{height:'calc(100vh - 140px) '}}>
+          <div className="w-96/100 rounded-md border-solid border border-sky-400 mt-3 mb-[10px] overflow-auto" style={{height:'calc(100vh - 140px) '}}>
             {messages.map((message,index)=><div key={index} className={`w-3/5 px-2 py-1 ${message.from==selectedUser?'float-left text-left':'float-right text-right'}`} >{message.message}</div>)}
           </div>
           <div>

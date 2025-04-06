@@ -7,6 +7,8 @@ import { doc ,getDoc} from "firebase/firestore";
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import {collection,query,where,orderBy,addDoc,onSnapshot,serverTimestamp} from 'firebase/firestore';
 import { Link } from 'react-router-dom';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 let signins=['/post/create','/chat']
 
@@ -64,10 +66,18 @@ const Authenticate =(props) => {
   }
   return (<>
      {props.children}
+     <Backdrop
+        sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+        open={props.loading}
+        // onClick={()=>{props.updateBase({loading:false})}}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>)
 }
 const mapStateToProps = (state) => ({
-  user: state.user
+  user: state.user,
+  loading:state.base.loading
 });
   
 export default connect(
