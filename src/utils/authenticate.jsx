@@ -6,6 +6,7 @@ import {updateBase} from '../store/actions/baseActions';
 import { doc ,getDoc} from "firebase/firestore";
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import {collection,query,where,orderBy,addDoc,onSnapshot,serverTimestamp} from 'firebase/firestore';
+import { Link } from 'react-router-dom';
 
 let signins=['/post/create','/chat']
 
@@ -32,21 +33,7 @@ const Authenticate =(props) => {
       unsubscribe();
     }
   }, []);  
-  useEffect(() => {
-    if(!props.user.authenticated)
-      {
-        for(var i=0;i<signins.length;i++)
-        {
-          if(location.pathname.startsWith(signins[i]))
-          {
-            console.log(signins[i]);
-            navigate("/")
-            break
-          }
-        }
-      }
-  }, [props.user.authenticated]);  
- 
+  
   // console.log(props.user);
   
   auth.onAuthStateChanged(() => {
@@ -65,6 +52,16 @@ const Authenticate =(props) => {
           props.signOut()
       }
   })
+  if(!props.user.authenticated)
+  {
+    for(var i=0;i<signins.length;i++)
+    {
+      if(location.pathname.startsWith(signins[i]))
+      {
+        return <>Please signin... <Link to="/">Home</Link></>
+      }
+    }
+  }
   return (<>
      {props.children}
     </>)

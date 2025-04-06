@@ -98,7 +98,7 @@ const Post = (props) => {
           ...prev,
           loves: prev.loves.filter(person => person !== loginUser)
         }));
-        setIsRecommended(false);      }
+      }
     } else {
       if (!recommendations.laughs.includes(loginUser)) {
         setRecommendations(prev => ({
