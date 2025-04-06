@@ -27,7 +27,6 @@ const SignUp = (props) => {
     try {
         const userCredential=await createUserWithEmailAndPassword(auth, updateDoc.email, updateDoc.password)
         const user = userCredential.user;
-        console.log('user', user)
         await setDoc(doc(db, "users", user.uid), {
           username: updateDoc.userName,
           email: user.email,
