@@ -14,7 +14,6 @@ import Notification from './pages/chat/notification'
 import NavBar from './components/layout/navbar'
 import Authenticatie from './utils/authenticate'
 
-
 function App() {
   return (<>
     <Provider store={store}>
@@ -31,6 +30,7 @@ function App() {
             </Routes>
           </Authenticatie>
         </BrowserRouter>
+        
     </Provider>    
     </>)
 }

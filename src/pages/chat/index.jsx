@@ -52,7 +52,7 @@ const Chat = (props) => {
   return (
     <>
       <div className="flex flex-row w-full">
-        <div className="basis-1/5 min-w-[120px] rounded-md border-solid border border-sky-400 m-3" style={{height:'calc(100vh - 90px) '}}>
+        <div className="basis-1/5 min-w-[120px] rounded-md border-solid border border-sky-400 m-3" style={{height:'calc(100vh - 100px) '}}>
           {props.users.map((user, index) => (
             user.email==props.user.email?null:
             <div key={index} className={`chat-user flex flex-row cursor-pointer focus:bg-sky-400 h-[40px] p-2 text-lg ${user.email==selectedUser?'bg-sky-400':' hover:bg-sky-200'}`} onClick={()=>select_user(user)}>
@@ -62,7 +62,7 @@ const Chat = (props) => {
           ))}
         </div>
         <div className="basis-4/4 ">
-          <div className="w-96/100 rounded-md border-solid border border-sky-400 mt-3 mb-[10px] overflow-auto" style={{height:'calc(100vh - 140px) '}}>
+          <div className="w-96/100 rounded-md border-solid border border-sky-400 mt-3 mb-[10px] overflow-auto" style={{height:'calc(100vh - 150px) '}}>
             {messages.map((message,index)=><div key={index} className={`w-3/5 px-2 py-1 ${message.from==selectedUser?'float-left text-left':'float-right text-right'}`} >{message.message}</div>)}
           </div>
           <div>

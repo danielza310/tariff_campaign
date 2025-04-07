@@ -4,7 +4,8 @@ import {
 
 const initialState = {
   users: [],
-  unreadmessages:[]
+  unreadmessages:[],
+  loading:false,
 };
 
 export default function(state = initialState, action) {
