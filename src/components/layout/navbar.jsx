@@ -57,7 +57,7 @@ const Navbar = (props) => {
         setAnchorEl(null);
     };
   return (<>
-     <nav className="fixed top-0 left-0 w-full bg-white h-[70px] flex z-50">
+     <nav className="fixed top-0 m-y-auto w-full bg-white h-[70px] flex z-50 max-w-[1380px]">
         <ul className='flex flex-row w-fit float-left'>
                 <li>
                     <Link to="/" className="flex flex-row">

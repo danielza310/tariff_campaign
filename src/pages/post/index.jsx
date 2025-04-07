@@ -9,6 +9,7 @@ import {updateBase } from "../../store/actions/baseActions"
 import { format } from 'date-fns';
 import Post from './post';
 import SocialPostCard from './postcard';
+import Slider from "react-slick";
 
 
 let lastVisible = null;
@@ -103,6 +104,14 @@ const Posts = (props) => {
     props.updateBase({loading:false})
   }
 
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    fade: true,
+  };
   return (<>
      
       <div className="flex flex-col md:flex-row w-full px-4 py-8 gap-6">
@@ -140,8 +149,8 @@ const Posts = (props) => {
               { label: "Home", icon: "🏠" },
               { label: "About", icon: "ℹ️" },
               { label: "DMs", icon: "💬", url: "/chat" },
-              { label: "T & C", icon: "📃" },
-              { label: "Privacy", icon: "🔒" },
+              { label: "T & C", icon: "📃", url: "/info/tc" },
+              { label: "Privacy", icon: "🔒", url: "/info/privacy" },
             ].map((item) => (
               <li
                 key={item.label}
@@ -160,11 +169,22 @@ const Posts = (props) => {
 
         {/* Main Post Content */}
         <main className="w-full md:w-3/5">
+          <Slider {...settings}>
+          <img  src="/assets/images/advertication/1.png"/>
+          <img  src="/assets/images/advertication/2.png"/>
+          <img  src="/assets/images/advertication/3.png"/>
+          </Slider>
+          {/* <Carousel {...carousel_setting}  className="adCarousel"
+            >
+               <Paper className="Project"  elevation={10}><img  src="/assets/images/advertication/1.png"/></Paper>
+               <Paper className="Project" elevation={10}><img  src="/assets/images/advertication/2.png"/></Paper>
+               <Paper className="Project" elevation={10}><img  src="/assets/images/advertication/3.png"/></Paper>
+          </Carousel>*/}
           <div className="space-y-6">
             {posts.map((article, index) => (
               <Post key={index} {...article} />
             ))}
-          </div>
+          </div> 
         </main>
 
         {/* Right Sidebar */}

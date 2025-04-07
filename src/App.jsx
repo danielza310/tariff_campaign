@@ -10,10 +10,12 @@ import SignIn from './pages/sign/signin'
 import SignUp from './pages/sign/signUp'
 import CreatePost from './pages/post/create'
 import Chat from './pages/chat'
+import MarkDown from './pages/markdown'
 import Notification from './pages/chat/notification'
 import NavBar from './components/layout/navbar'
 import Authenticatie from './utils/authenticate'
-
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 function App() {
   return (<>
     <Provider store={store}>
@@ -27,6 +29,7 @@ function App() {
               <Route path="/chat" element={<Chat/>} />
               <Route path="/notification" element={<Notification/>} />
               <Route path="/post/create" element={<CreatePost/>} />
+              <Route path="/info/:md" element={<MarkDown/>} />
             </Routes>
           </Authenticatie>
         </BrowserRouter>
