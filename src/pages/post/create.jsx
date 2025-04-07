@@ -18,7 +18,6 @@ const CreatePost = (props) => {
     }
   };
   const create=async ()=>{
-    console.log(image)
     if(title.trim()=="")
     {
         alert('Please input new post title.');
@@ -31,15 +30,17 @@ const CreatePost = (props) => {
         }
     try {
         const docRef = await addDoc(collection(db, "posts"), {
-            title, content , useremail:props.user.email,username:props.user.username, likes:[], loves:[], laughs:[], comments:[],
+            title, content , useremail:props.user.email,username:props.user.username, likes:[], loves:[], laughs:[], comments:[],image:image.name,
             createdAt: serverTimestamp(), // 👈 sets to current server time
         });
         if(image)
         {
             const imageRef = storageRef(storage, `products/${docRef.id}`);
-            await uploadBytes(imageRef, image)
+            let result=await uploadBytes(imageRef, image)
+            console.log(result);
+            
         }
-        navigate('/');
+        // navigate('/');
     } catch (error) {
         console.log(error)
     }

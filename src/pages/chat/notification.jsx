@@ -12,13 +12,25 @@ const Notification = (props) => {
   }
   useEffect(() => {
     if(!props.user.authenticated) return;
-      setMessages(props.unreadmessages.filter(m=>m.from=="site"))
-      console.log(props.unreadmessages);
-      props.unreadmessages.filter(m=>m.from=="site").forEach(message => {
-        const msg = doc(db, "messages", message.id);
+    const q = query(
+      collection(db, 'messages'),
+      where('from', '==', "site"),
+      where('to', '==', props.user.email),
+      orderBy('read'),
+      orderBy('timestamp')
+    );
+    let _messages=[]
+    getDocs(q).then(snap=>{
+      snap.docs.forEach(doc1=>{
+        let data=doc1.data();
+        const msg = doc(db, "messages", doc1.id);
         updateDoc(msg, { read:1}).then((res) => {
         })
-      });
+        _messages.push({id:doc1.id,...data})
+      })
+      setMessages(_messages)
+    });
+      
   }, [props.user.authenticated]);  
   return (
     <>

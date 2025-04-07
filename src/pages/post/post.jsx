@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { connect } from 'react-redux';
 import { MessageCircle, Bookmark, ChevronDown, ChevronUp, ThumbsUp, Heart,Laugh } from 'lucide-react';
-import { db } from "../../firebase"
+import { db,storage,storageBucket } from "../../firebase"
 import { doc, setDoc, getDoc, collection , addDoc, serverTimestamp } from "firebase/firestore";
+import { ref,getDownloadURL  } from "firebase/storage";
 import { useLocation } from 'react-router-dom';
 import {setUserData} from '../../store/actions/userActions';
 import { updatePost, updateRecommendation } from "../../store/actions/postActions"
@@ -60,6 +61,7 @@ const Post = (props) => {
   let location=useLocation();
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [imagepath, setImagePath] = useState("");
   const previewLength = 400;
   const shouldShowMore = content.length > previewLength;
   const displayContent = isExpanded ? content : content.slice(0, previewLength) + '...';
@@ -159,6 +161,26 @@ const Post = (props) => {
     })
   }, [recommendations])
 
+  if(props.image)
+  {
+    const gsReference = ref(storage, 'gs://'+storageBucket+'/products/'+id);
+    getDownloadURL(gsReference)
+    .then((url) => {
+      // `url` is the download URL for 'images/stars.jpg'
+      setImagePath(url)
+      // This can be downloaded directly:
+      // const xhr = new XMLHttpRequest();
+      // xhr.responseType = 'blob';
+      // xhr.onload = (event) => {
+      //   const blob = xhr.response;
+      // };
+      // xhr.open('GET', url);
+      // xhr.send();
+    })
+    .catch((error) => {
+      // Handle any errors
+    });
+  }
 
   return (<>
   <article className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200 w-full">
@@ -256,7 +278,8 @@ const Post = (props) => {
               </a>
             </div>
           )}
-        </div>
+      </div>
+      {imagepath!="" && <div><img src={imagepath}/></div>}
     </div>
 
     {/* Reactions, Comments, Read Time */}
