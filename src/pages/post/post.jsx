@@ -13,22 +13,27 @@ import { LuUserRound } from "react-icons/lu";
 
 const Post = (props) => {
   const [defaultTime, setDefaultTime] = useState(new Date())
-  const getServerTime = async () => {
+  const getServerTime = () => {
     const tempRef = doc(db, 'utils', 'server-time');
-  
-    // Write server timestamp
-    await setDoc(tempRef, { time: serverTimestamp() });
-  
-    // Read back to get resolved timestamp
-    const snapshot = await getDoc(tempRef);
-    const serverTime = snapshot.data().time.toDate(); // Convert Firestore Timestamp to JS Date
-  
-    return serverTime;
+    return new Promise((res, rej) => {
+      setDoc(tempRef, { time: serverTimestamp() }).then(()=>{
+        getDoc(tempRef).then(snapshot=>{
+          if(snapshot.data().time==null){
+            rej();
+            return;
+          } 
+          const serverTime = snapshot.data().time.toDate(); // Convert Firestore Timestamp to JS Date
+          res(serverTime)
+        })
+      })
+    })
   }
 
   useEffect(() => {
     getServerTime().then((time)=>{
       setDefaultTime(time)
+    }).catch(()=>{
+
     })
   }, [])
 
@@ -65,6 +70,7 @@ const Post = (props) => {
   const previewLength = 400;
   const shouldShowMore = content.length > previewLength;
   const displayContent = isExpanded ? content : content.slice(0, previewLength) + '...';
+  const [truncate, setToggleTruncate] = useState(true);
 
   const formattedContent = displayContent
   .replace(/\. /g, '.\n')
@@ -182,6 +188,24 @@ const Post = (props) => {
     });
   }
 
+  const textStyle = {
+    maxWidth: '100%',
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 3,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  };
+
+  function calculateTextStyle() {
+    return truncate ? textStyle : null;
+  }
+
+
+  function toggleTruncate() {
+    setToggleTruncate(!truncate);
+  }
+
   return (<>
   <article className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200 w-full">
     {/* Avatar and Username */}
@@ -239,15 +263,15 @@ const Post = (props) => {
       </p> */}
 
       <div className="relative">
-          <div 
+          {/* <div 
             className={`text-gray-700 leading-relaxed ${
               !isExpanded ? 'line-clamp-3 pr-32' : ''
             }`}
           >
             <p className="whitespace-pre-line text-left">{formattedContent}</p>
-          </div>
-          
-          {!isExpanded && (
+          </div> */}
+          <div className='text-left post_content' dangerouslySetInnerHTML={{ __html: content }} style={calculateTextStyle()} onClick={toggleTruncate} />
+          {/* {!isExpanded && (
             <div className="absolute bottom-0 right-0 inline-flex items-center bg-gradient-to-l from-white via-white to-transparent pl-12">
               <a
                 href="#"
@@ -277,7 +301,7 @@ const Post = (props) => {
                 <ChevronUp className="w-4 h-4" />
               </a>
             </div>
-          )}
+          )} */}
       </div>
       {imagepath!="" && <div><img src={imagepath}/></div>}
     </div>

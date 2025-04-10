@@ -23,11 +23,13 @@ const Posts = (props) => {
 
   useEffect(()=>{
     setPosts([]);
+    setIsFetching(false);
     lastVisible=null;
     search();
   },[location.pathname,props.keyword])
 
   const handleScroll = () => {
+    // console.log("scroll",window.innerHeight,document.documentElement.scrollTop,document.documentElement.offsetHeight,isFetching );
     if (
       window.innerHeight + document.documentElement.scrollTop
       >= document.documentElement.offsetHeight - 100
@@ -95,6 +97,7 @@ const Posts = (props) => {
     }
     let trendingPosts=[...posts,..._posts]
     setPosts([...posts,..._posts])
+    if(_posts.length!=0) setIsFetching(false);
     trendingPosts.sort((a, b) => {
       let recommendA = Number(a.likes.length + a.loves.length + a.laughs.length)
       let recommendB= Number(b.likes.length + b.loves.length + b.laughs.length)
