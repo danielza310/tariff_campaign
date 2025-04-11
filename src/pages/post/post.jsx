@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react'
 import { connect } from 'react-redux';
 import { MessageCircle, Bookmark, ChevronDown, ChevronUp, ThumbsUp, Heart,Laugh } from 'lucide-react';
 import { db,storage,storageBucket } from "../../firebase"
-import { doc, setDoc, getDoc, collection , addDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { ref,getDownloadURL  } from "firebase/storage";
-import { useLocation } from 'react-router-dom';
 import {setUserData} from '../../store/actions/userActions';
 import { updatePost, updateRecommendation } from "../../store/actions/postActions"
 import { format  } from 'date-fns';
 import "./post.css"
 import { LuUserRound } from "react-icons/lu";
+import { BsBookmarkCheckFill } from "react-icons/bs";
 
 const Post = (props) => {
   const [defaultTime, setDefaultTime] = useState(new Date())
@@ -39,42 +39,26 @@ const Post = (props) => {
 
   const signin_email = props.user.email
   const { title, content, username, useremail, createdAt, likes, loves, laughs, id, comments } = props
-  const [recommendations, setRecommendations] = useState({likes, loves, laughs, userEmail: "",notice:""});
+  const [recommendations, setRecommendations] = useState({
+    id:props.id,title:props.title,useremail:props.useremail, likes, loves, laughs,comments,follows:props.follows?props.follows:[],notice:"",type:""});
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [evaluationText, setEvaluationText] = useState('');
-  const [evaluations, setEvaluations] = useState([]);
-  const [expandedEvaluations, setExpandedEvaluations] = useState({});
 
-  const toggleEvaluationExpand = (name) => {
-    setExpandedEvaluations((prev) => ({
-      ...prev,
-      [name]: !prev[name],
-    }));
-  };
-
-  const submitEvaluation = (id) => {
+  const submitEvaluation = () => {
     if (evaluationText.trim() === '') return;
-    const { username } = props.user
-    const newComment = { name: username, content: evaluationText }
-    let updateComment = comments
-    updateComment.push(newComment)
-    setRecommendations({...recommendations, comments: updateComment, id })
-    setEvaluationText("")
+    props.updateRecommendation(recommendations,{type:"comment",evaluationText}).then(updated_recommendations=>{
+      setRecommendations(updated_recommendations);
+      setEvaluationText("")
+    })
   };
-  // const [isRecommended, setIsRecommended] = useState(false);
-
-  let location=useLocation();
-
-  const [isExpanded, setIsExpanded] = useState(false);
   const [imagepath, setImagePath] = useState("");
-  const previewLength = 400;
-  const shouldShowMore = content.length > previewLength;
-  const displayContent = isExpanded ? content : content.slice(0, previewLength) + '...';
   const [truncate, setToggleTruncate] = useState(true);
 
-  const formattedContent = displayContent
-  .replace(/\. /g, '.\n')
-  .replace(/: /g, ':\n');
+  const handleUpdateRecommendations=(type=>{
+    props.updateRecommendation(recommendations,{type}).then(updated_recommendations=>{
+      setRecommendations(updated_recommendations);
+    })
+  })
 
 
   const getTimeDifferenceString = (dateStr1, dateStr2) => {
@@ -100,72 +84,6 @@ const Post = (props) => {
     const formatCTime = format(createdAt.toDate(), 'yyyy-MM-dd HH:mm:ss');
     return getTimeDifferenceString(formatCTime, formatDTime)
   }
-
-  const handleRecommend = (type) => {
-    /*
-    I reacted to the post with a love reaction.
-    I removed the love reaction from the post.
-    */
-    setRecommendations({ ...recommendations, id })
-    let notice="";
-    if (type == 0) {
-      if (!recommendations.likes.includes(signin_email)) {
-        notice=`${props.user.username} reacted to the post ${title} with a like reaction.`;
-        setRecommendations(prev => ({
-          ...prev,notice,
-          likes: [...prev.likes, signin_email]
-        }));
-      } else {
-        notice=`${props.user.username} removed the like reaction from the post ${title}`;
-        setRecommendations(prev => ({
-          ...prev,notice,
-          likes: prev.likes.filter(person => person !== signin_email)
-        }));
-      }
-    } else if (type == 1) {
-      if (!recommendations.loves.includes(signin_email)) {
-        notice=`${props.user.username} reacted to the post ${title} with a love reaction.`;
-        setRecommendations(prev => ({
-          ...prev,notice,
-          loves: [...prev.loves, signin_email]
-        }));
-      } else {
-        notice=`${props.user.username} removed the love reaction from the post ${title}`;
-        setRecommendations(prev => ({
-          ...prev,notice,
-          loves: prev.loves.filter(person => person !== signin_email)
-        }));
-      }
-    } else {
-      if (!recommendations.laughs.includes(signin_email)) {
-        notice=`${props.user.username} reacted to the post ${title} with a laugh reaction.`;
-        setRecommendations(prev => ({
-          ...prev,notice,
-          laughs: [...prev.laughs, signin_email]
-        }));
-      } else {
-        notice=`${props.user.username} removed the laugh reaction from the post ${title}`;
-        setRecommendations(prev => ({
-          ...prev,notice,
-          laughs: prev.laughs.filter(person => person !== signin_email)
-        }));
-      }
-    }
-  };
-
-  useEffect(() => {
-    props.updateRecommendation(recommendations).then(()=>{
-       addDoc(collection(db, 'messages'), {
-          from: "site" ,
-          to: props.useremail,
-          message:recommendations.notice,
-          read:0,
-          timestamp: serverTimestamp(),
-        });
-    }).catch(()=>{
-      
-    })
-  }, [recommendations])
 
   if(props.image)
   {
@@ -318,7 +236,7 @@ const Post = (props) => {
             }`}
             onClick={() => {
               if (useremail != signin_email) {
-                handleRecommend(0);
+                handleUpdateRecommendations("like");
               }
             }}
           >
@@ -338,7 +256,7 @@ const Post = (props) => {
             }`}
             onClick={() => {
               if (useremail != signin_email) {
-                handleRecommend(1);
+                handleUpdateRecommendations("love");
               }
             }}
           >
@@ -358,7 +276,7 @@ const Post = (props) => {
             }`}
             onClick={() => {
               if (useremail != signin_email) {
-                handleRecommend(2);
+                handleUpdateRecommendations("laugh");
               }
             }}
           >
@@ -370,14 +288,33 @@ const Post = (props) => {
               )}
             </span>
           </div>
+          {/* follows */}
+          {useremail != signin_email && <div
+              className={`flex items-center gap-1 cursor-pointer transition-colors ${
+                useremail == signin_email ? 'pointer-events-none opacity-50' : 'hover:text-rose-500'
+              }`}
+              onClick={() => {
+                if (useremail != signin_email) {
+                  handleUpdateRecommendations("follow");
+                }
+              }}
+            >
+              <button>{recommendations.follows.filter(e=>e==props.user.email).length==0?"follow":"following"}</button>              
+          </div>}
         </div>
+
+        
+        
+
+        
+
 
         {/* comment */}
         <div className="flex items-center hover:text-gray-700 cursor-pointer" onClick={() => setShowEvaluation((prev) => !prev)}>
             <MessageCircle size={24} />
             <span className="w-6 h-6 flex items-center justify-center text-sm text-red-600 bg-white rounded-full">
-              {comments.length > 0 && (
-                <span className="text-sm">{comments.length}</span>
+              {recommendations.comments.length > 0 && (
+                <span className="text-sm">{recommendations.comments.length}</span>
               )}
             </span>
             <span className="ml-1">comments</span>
@@ -399,9 +336,9 @@ const Post = (props) => {
 
     <div className="bg-gray-50 rounded-md border-none p-4 mt-4 md:ml-10 md:mr-[50px]">
       {/* Evaluation List */}
-      {comments.length > 0 ? (
+      {recommendations.comments.length > 0 ? (
       <ul className="mb-4 space-y-2">
-        {comments.map((item, index) => (
+        {recommendations.comments.map((item, index) => (
           <li key={index} className="border-none p-2 rounded text-sm bg-white">
             {/* Avatar and Username */}
             <div className="flex items-center gap-3 mb-3">
@@ -424,9 +361,9 @@ const Post = (props) => {
       <p className="text-gray-500 mb-4">No feedback yet. Be the first to comment!</p>
     )}
 
-      {/* {comments.length > 0 ? (
+      {/* {recommendations.comments.length > 0 ? (
         <ul className="mb-4 space-y-2">
-          {comments.map((item, index) => {
+          {recommendations.comments.map((item, index) => {
           const isExpanded = expandedEvaluations[item.name];
           const content = item.content;
           const preview = content.slice(0, 350);
@@ -467,7 +404,7 @@ const Post = (props) => {
       <button disabled={useremail == signin_email && true}
         onClick={() => {
           if (useremail != signin_email) {
-            submitEvaluation(id);
+            submitEvaluation();
           }
         }}
         className="mt-2 px-4 py-2 bg-blue-600 text-black rounded-md hover:bg-blue-700 text-sm"
