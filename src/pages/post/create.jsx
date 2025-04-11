@@ -20,7 +20,7 @@ const CreatePost = (props) => {
         rte=new window.RichTextEditor(refdiv.current);
         rte.setHTMLCode("");
     },10)
-  },[])
+},[])
 
 
   const handleChange = e => {

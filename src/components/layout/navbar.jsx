@@ -34,13 +34,13 @@ const Navbar = (props) => {
                 collection(db, 'messages'),
                 where('to', '==', props.user.email),
                 where('read', '==', 0),
-                orderBy('timestamp')
+                orderBy('timestamp','desc')
             );
             const unsubscribe = onSnapshot(q, (snapshot) => {
                 const data = snapshot.docs.map((doc) =>{
                     return {id:doc.id,...doc.data()}
                 });
-                // console.log(data);                
+                // console.log(data);  
                 props.updateBase({unreadmessages:data})
             });
             return () => {
@@ -56,6 +56,9 @@ const Navbar = (props) => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    // console.log(props.unreadmessages,props.unreadmessages_update);
+    
   return (<>
      <nav className="fixed top-0 m-y-auto w-full bg-white h-[70px] flex z-50 max-w-[1380px]">
         <ul className='flex flex-row w-fit float-left'>
@@ -190,7 +193,8 @@ const Navbar = (props) => {
 
 const mapStateToProps = (state) => ({
     user: state.user,
-    unreadmessages: state.base.unreadmessages
+    unreadmessages: state.base.unreadmessages,
+    unreadmessages_update: state.base.unreadmessages_update
   });
   
 export default connect(

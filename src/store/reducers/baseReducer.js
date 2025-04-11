@@ -6,6 +6,7 @@ const initialState = {
   users: [],
   unreadmessages:[],
   loading:false,
+  unreadmessages_update:0,
 };
 
 export default function(state = initialState, action) {

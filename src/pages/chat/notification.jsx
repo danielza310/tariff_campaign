@@ -17,7 +17,7 @@ const Notification = (props) => {
       where('from', '==', "site"),
       where('to', '==', props.user.email),
       orderBy('read'),
-      orderBy('timestamp')
+      orderBy('timestamp','desc')
     );
     let _messages=[]
     getDocs(q).then(snap=>{
@@ -31,12 +31,17 @@ const Notification = (props) => {
       setMessages(_messages)
     });
       
-  }, [props.user.authenticated]);  
+  }, [props.user.authenticated,props.unreadmessages]);  
   return (
     <>
       <div className="flex flex-row w-full">
           <div className="w-full">
-            {messages.map((message,index)=><div key={index} className={`w-96/100 rounded-md border-solid border border-sky-400 m-3 px-3 py-4 text-left`} >{message.message}</div>)}
+            {messages.map((message,index)=><div key={index} className={`w-96/100 rounded-md border-solid border border-sky-400 m-3 px-3 py-4 text-left`}>     
+              <div>{message.message}</div>
+              {message.type=='comment' && <div className="p-3">
+                  <pre>{message.comment}</pre>
+                </div>}
+            </div>)}
           </div>
       </div>
     </>
@@ -46,6 +51,7 @@ const Notification = (props) => {
 const mapStateToProps = (state) => ({
   users: state.base.users,
   unreadmessages: state.base.unreadmessages,
+  unreadmessages_update: state.base.unreadmessages_update,
   user: state.user,
 });
 
